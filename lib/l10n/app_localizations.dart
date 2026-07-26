@@ -194,6 +194,54 @@ abstract class AppLocalizations {
   /// **'Nothing here yet.'**
   String get commonNothingHereYet;
 
+  /// No description provided for @commonSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get commonSearch;
+
+  /// No description provided for @commonNoMatches.
+  ///
+  /// In en, this message translates to:
+  /// **'No matches'**
+  String get commonNoMatches;
+
+  /// No description provided for @commonDiscard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get commonDiscard;
+
+  /// No description provided for @commonKeepEditing.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep editing'**
+  String get commonKeepEditing;
+
+  /// No description provided for @discardChangesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard changes?'**
+  String get discardChangesTitle;
+
+  /// No description provided for @discardChangesBody.
+  ///
+  /// In en, this message translates to:
+  /// **'What you\'ve entered won\'t be saved.'**
+  String get discardChangesBody;
+
+  /// No description provided for @validationChooseProperty.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a property'**
+  String get validationChooseProperty;
+
+  /// No description provided for @propertyFloor.
+  ///
+  /// In en, this message translates to:
+  /// **'Floor {floor}'**
+  String propertyFloor(String floor);
+
   /// No description provided for @unitAndCompound.
   ///
   /// In en, this message translates to:
@@ -854,6 +902,12 @@ abstract class AppLocalizations {
   /// **'Submit request'**
   String get createMaintenanceSubmit;
 
+  /// No description provided for @createMaintenanceSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Maintenance request submitted'**
+  String get createMaintenanceSuccess;
+
   /// No description provided for @visitorPassesTitle.
   ///
   /// In en, this message translates to:
@@ -974,6 +1028,12 @@ abstract class AppLocalizations {
   /// **'Create pass'**
   String get createVisitorPassSubmit;
 
+  /// No description provided for @createVisitorPassSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Visitor pass created'**
+  String get createVisitorPassSuccess;
+
   /// No description provided for @createVisitorPassValidUntilError.
   ///
   /// In en, this message translates to:
@@ -1051,6 +1111,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Submit complaint'**
   String get createComplaintSubmit;
+
+  /// No description provided for @createComplaintSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaint submitted'**
+  String get createComplaintSuccess;
 
   /// No description provided for @announcementsEmpty.
   ///
@@ -1208,6 +1274,12 @@ abstract class AppLocalizations {
   /// **'Submit dispute'**
   String get createFinancialDisputeSubmit;
 
+  /// No description provided for @createFinancialDisputeSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispute submitted'**
+  String get createFinancialDisputeSuccess;
+
   /// No description provided for @createFinancialDisputeSelectItem.
   ///
   /// In en, this message translates to:
@@ -1286,6 +1358,12 @@ abstract class AppLocalizations {
   /// **'Submit appeal'**
   String get createViolationAppealSubmit;
 
+  /// No description provided for @createViolationAppealSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Appeal submitted'**
+  String get createViolationAppealSuccess;
+
   /// No description provided for @familyMembersTitle.
   ///
   /// In en, this message translates to:
@@ -1333,6 +1411,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save changes'**
   String get familyMemberSave;
+
+  /// No description provided for @familyMemberSavedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Family member saved'**
+  String get familyMemberSavedSuccess;
 
   /// No description provided for @familyMemberAdd.
   ///
@@ -1417,6 +1501,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add contact'**
   String get emergencyContactAdd;
+
+  /// No description provided for @emergencyContactSavedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency contact saved'**
+  String get emergencyContactSavedSuccess;
 
   /// No description provided for @emergencyContactEnterPhone.
   ///

@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/network/api_exception.dart';
 import '../../../../core/router/routes.dart';
+import '../../../../core/widgets/app_snackbar.dart';
+import '../../../../core/widgets/form_error_scroll.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
 
@@ -20,6 +22,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
 
+  /// Flipped by the first submit attempt: errors stay hidden until then,
+  /// after which every field re-checks itself live as it's corrected.
+  bool _autovalidate = false;
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -28,7 +34,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
+    setState(() => _autovalidate = true);
+    if (!validateAndScrollToError(_formKey)) return;
     await ref.read(authControllerProvider.notifier).login(
           email: _emailController.text.trim(),
           password: _passwordController.text,
@@ -45,7 +52,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       final error = next.error;
       if (error != null) {
         final message = error is ApiException ? error.message : l10n.loginFailed;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+        showErrorSnack(context, message);
       }
     });
 
@@ -56,6 +63,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Form(
               key: _formKey,
+              autovalidateMode: _autovalidate ? AutovalidateMode.always : AutovalidateMode.disabled,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -78,6 +86,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     autofillHints: const [AutofillHints.email],
+                    textInputAction: TextInputAction.next,
                     decoration:
                         InputDecoration(labelText: l10n.loginEmail, prefixIcon: const Icon(Icons.email_outlined)),
                     validator: (value) => (value == null || value.trim().isEmpty) ? l10n.loginEnterEmail : null,

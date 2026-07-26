@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/network/api_exception.dart';
 import '../../../../core/router/routes.dart';
+import '../../../../core/widgets/app_snackbar.dart';
 import '../../../../core/widgets/async_value_view.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/models/emergency_contact.dart';
@@ -71,7 +72,7 @@ class _ContactCard extends ConsumerWidget {
       ref.invalidate(emergencyContactsProvider);
     } on ApiException catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+      showErrorSnack(context, e.message);
     }
   }
 

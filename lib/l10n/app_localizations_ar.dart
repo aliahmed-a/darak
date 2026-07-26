@@ -57,6 +57,32 @@ class AppLocalizationsAr extends AppLocalizations {
   String get commonNothingHereYet => 'لا يوجد شيء هنا بعد.';
 
   @override
+  String get commonSearch => 'بحث';
+
+  @override
+  String get commonNoMatches => 'لا توجد نتائج';
+
+  @override
+  String get commonDiscard => 'تجاهل';
+
+  @override
+  String get commonKeepEditing => 'متابعة التعديل';
+
+  @override
+  String get discardChangesTitle => 'تجاهل التغييرات؟';
+
+  @override
+  String get discardChangesBody => 'لن يتم حفظ ما أدخلته.';
+
+  @override
+  String get validationChooseProperty => 'اختر الوحدة';
+
+  @override
+  String propertyFloor(String floor) {
+    return 'الطابق $floor';
+  }
+
+  @override
   String unitAndCompound(String unit, String compound) {
     return 'الوحدة $unit · $compound';
   }
@@ -424,6 +450,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get createMaintenanceSubmit => 'إرسال الطلب';
 
   @override
+  String get createMaintenanceSuccess => 'تم إرسال طلب الصيانة';
+
+  @override
   String get visitorPassesTitle => 'تصاريح الزوار';
 
   @override
@@ -490,6 +519,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get createVisitorPassSubmit => 'إنشاء التصريح';
 
   @override
+  String get createVisitorPassSuccess => 'تم إنشاء التصريح';
+
+  @override
   String get createVisitorPassValidUntilError =>
       'يجب أن يكون تاريخ الانتهاء بعد تاريخ البدء.';
 
@@ -529,6 +561,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get createComplaintSubmit => 'إرسال الشكوى';
+
+  @override
+  String get createComplaintSuccess => 'تم إرسال الشكوى';
 
   @override
   String get announcementsEmpty => 'لا توجد إعلانات بعد.';
@@ -620,6 +655,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get createFinancialDisputeSubmit => 'إرسال المنازعة';
 
   @override
+  String get createFinancialDisputeSuccess => 'تم إرسال المنازعة';
+
+  @override
   String get createFinancialDisputeSelectItem => 'اختر عنصرًا';
 
   @override
@@ -664,6 +702,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get createViolationAppealSubmit => 'إرسال الاستئناف';
 
   @override
+  String get createViolationAppealSuccess => 'تم إرسال الاستئناف';
+
+  @override
   String get familyMembersTitle => 'أفراد العائلة';
 
   @override
@@ -690,6 +731,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get familyMemberSave => 'حفظ التغييرات';
+
+  @override
+  String get familyMemberSavedSuccess => 'تم حفظ البيانات';
 
   @override
   String get familyMemberAdd => 'إضافة فرد العائلة';
@@ -734,6 +778,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get emergencyContactAdd => 'إضافة جهة اتصال';
+
+  @override
+  String get emergencyContactSavedSuccess => 'تم حفظ جهة الاتصال';
 
   @override
   String get emergencyContactEnterPhone => 'أدخل رقم هاتف';

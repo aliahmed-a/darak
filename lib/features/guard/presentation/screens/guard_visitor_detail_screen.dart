@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/network/api_exception.dart';
 import '../../../../core/utils/formatters.dart';
+import '../../../../core/widgets/app_snackbar.dart';
 import '../../../../core/widgets/async_value_view.dart';
 import '../../../../core/widgets/status_chip.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -95,7 +96,7 @@ class _GuardVisitorDetailScreenState extends ConsumerState<GuardVisitorDetailScr
       _refreshAfterAction();
     } on ApiException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+      showErrorSnack(context, e.message);
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
@@ -130,7 +131,7 @@ class _GuardVisitorDetailScreenState extends ConsumerState<GuardVisitorDetailScr
       _leaveAfterTerminalAction();
     } on ApiException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+      showErrorSnack(context, e.message);
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
@@ -175,7 +176,7 @@ class _GuardVisitorDetailScreenState extends ConsumerState<GuardVisitorDetailScr
       _leaveAfterTerminalAction();
     } on ApiException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+      showErrorSnack(context, e.message);
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }

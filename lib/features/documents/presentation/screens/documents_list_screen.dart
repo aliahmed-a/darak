@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../../../core/network/api_exception.dart';
 import '../../../../core/utils/formatters.dart';
+import '../../../../core/widgets/app_snackbar.dart';
 import '../../../../core/widgets/async_value_view.dart';
 import '../../../../core/widgets/paged_list_view.dart';
 import '../../../../core/widgets/status_chip.dart';
@@ -64,7 +65,6 @@ class _DocumentCardState extends ConsumerState<_DocumentCard> {
     if (_isDownloading) return;
     setState(() => _isDownloading = true);
 
-    final messenger = ScaffoldMessenger.of(context);
     final l10n = AppLocalizations.of(context)!;
     try {
       final bytes = await ref.read(documentsApiProvider).download(widget.document.id);
@@ -74,11 +74,11 @@ class _DocumentCardState extends ConsumerState<_DocumentCard> {
 
       final result = await OpenFilex.open(file.path);
       if (result.type != ResultType.done && mounted) {
-        messenger.showSnackBar(SnackBar(content: Text(l10n.documentCouldNotOpen(result.message))));
+        showErrorSnack(context, l10n.documentCouldNotOpen(result.message));
       }
     } on ApiException catch (e) {
       if (!mounted) return;
-      messenger.showSnackBar(SnackBar(content: Text(e.message)));
+      showErrorSnack(context, e.message);
     } finally {
       if (mounted) setState(() => _isDownloading = false);
     }
