@@ -57,6 +57,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonNothingHereYet => 'Nothing here yet.';
 
   @override
+  String get commonSearch => 'Search';
+
+  @override
+  String get commonNoMatches => 'No matches';
+
+  @override
+  String get commonDiscard => 'Discard';
+
+  @override
+  String get commonKeepEditing => 'Keep editing';
+
+  @override
+  String get discardChangesTitle => 'Discard changes?';
+
+  @override
+  String get discardChangesBody => 'What you\'ve entered won\'t be saved.';
+
+  @override
+  String get validationChooseProperty => 'Choose a property';
+
+  @override
+  String propertyFloor(String floor) {
+    return 'Floor $floor';
+  }
+
+  @override
   String unitAndCompound(String unit, String compound) {
     return 'Unit $unit · $compound';
   }
@@ -424,6 +450,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createMaintenanceSubmit => 'Submit request';
 
   @override
+  String get createMaintenanceSuccess => 'Maintenance request submitted';
+
+  @override
   String get visitorPassesTitle => 'Visitor passes';
 
   @override
@@ -490,6 +519,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createVisitorPassSubmit => 'Create pass';
 
   @override
+  String get createVisitorPassSuccess => 'Visitor pass created';
+
+  @override
   String get createVisitorPassValidUntilError =>
       'Valid until must be after valid from.';
 
@@ -529,6 +561,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get createComplaintSubmit => 'Submit complaint';
+
+  @override
+  String get createComplaintSuccess => 'Complaint submitted';
 
   @override
   String get announcementsEmpty => 'No announcements yet.';
@@ -620,6 +655,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createFinancialDisputeSubmit => 'Submit dispute';
 
   @override
+  String get createFinancialDisputeSuccess => 'Dispute submitted';
+
+  @override
   String get createFinancialDisputeSelectItem => 'Select item';
 
   @override
@@ -664,6 +702,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createViolationAppealSubmit => 'Submit appeal';
 
   @override
+  String get createViolationAppealSuccess => 'Appeal submitted';
+
+  @override
   String get familyMembersTitle => 'Family members';
 
   @override
@@ -690,6 +731,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get familyMemberSave => 'Save changes';
+
+  @override
+  String get familyMemberSavedSuccess => 'Family member saved';
 
   @override
   String get familyMemberAdd => 'Add family member';
@@ -734,6 +778,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get emergencyContactAdd => 'Add contact';
+
+  @override
+  String get emergencyContactSavedSuccess => 'Emergency contact saved';
 
   @override
   String get emergencyContactEnterPhone => 'Enter a phone number';

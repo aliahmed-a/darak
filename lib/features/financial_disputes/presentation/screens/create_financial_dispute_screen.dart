@@ -5,6 +5,10 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/network/api_exception.dart';
 import '../../../../core/network/paged_list_controller.dart';
 import '../../../../core/utils/formatters.dart';
+import '../../../../core/widgets/app_picker_field.dart';
+import '../../../../core/widgets/app_snackbar.dart';
+import '../../../../core/widgets/discard_changes_guard.dart';
+import '../../../../core/widgets/form_error_scroll.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../account/presentation/providers/account_providers.dart';
 import '../../../payments/presentation/providers/payments_provider.dart';
@@ -17,6 +21,15 @@ const _targetTypeOptions = [
   FinancialDisputeTargetType.propertyInstallment,
   FinancialDisputeTargetType.payment,
 ];
+
+IconData _targetTypeIcon(FinancialDisputeTargetType type) => switch (type) {
+      FinancialDisputeTargetType.utilityBill => Icons.receipt_long_outlined,
+      FinancialDisputeTargetType.rentInvoice => Icons.home_outlined,
+      FinancialDisputeTargetType.propertyInstallment => Icons.calendar_month_outlined,
+      FinancialDisputeTargetType.payment => Icons.payments_outlined,
+      FinancialDisputeTargetType.violationFine => Icons.gavel_outlined,
+      FinancialDisputeTargetType.financialAdjustment => Icons.tune_outlined,
+    };
 
 class CreateFinancialDisputeScreen extends ConsumerStatefulWidget {
   const CreateFinancialDisputeScreen({super.key});
@@ -33,6 +46,13 @@ class _CreateFinancialDisputeScreenState extends ConsumerState<CreateFinancialDi
   String? _targetId;
   bool _isSubmitting = false;
 
+  /// Flipped by the first submit attempt: errors stay hidden until then,
+  /// after which every field re-checks itself live as it's corrected.
+  bool _autovalidate = false;
+
+  bool get _isDirty =>
+      _reasonController.text.trim().isNotEmpty || _messageController.text.trim().isNotEmpty || _targetId != null;
+
   @override
   void dispose() {
     _reasonController.dispose();
@@ -41,10 +61,13 @@ class _CreateFinancialDisputeScreenState extends ConsumerState<CreateFinancialDi
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
+    setState(() => _autovalidate = true);
+    if (!validateAndScrollToError(_formKey)) return;
     final l10n = AppLocalizations.of(context)!;
+    // The item picker validates inline, but when the resident has nothing of
+    // this type at all there's no picker on screen to hang an error on.
     if (_targetId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.createFinancialDisputeSelectTarget)));
+      showErrorSnack(context, l10n.createFinancialDisputeSelectTarget);
       return;
     }
 
@@ -58,10 +81,11 @@ class _CreateFinancialDisputeScreenState extends ConsumerState<CreateFinancialDi
           );
       ref.invalidate(financialDisputesControllerProvider);
       if (!mounted) return;
+      showSuccessSnack(context, l10n.createFinancialDisputeSuccess);
       context.pop();
     } on ApiException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+      showErrorSnack(context, e.message);
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
@@ -70,58 +94,70 @@ class _CreateFinancialDisputeScreenState extends ConsumerState<CreateFinancialDi
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.createFinancialDisputeTitle)),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              DropdownButtonFormField<FinancialDisputeTargetType>(
-                value: _targetType,
-                decoration: InputDecoration(labelText: l10n.fieldWhatDisputing),
-                items: _targetTypeOptions
-                    .map((type) => DropdownMenuItem(value: type, child: Text(type.label(context))))
-                    .toList(),
-                onChanged: (value) => setState(() {
-                  _targetType = value!;
-                  _targetId = null;
-                }),
-              ),
-              const SizedBox(height: 12),
-              _TargetPicker(
-                key: ValueKey(_targetType),
-                targetType: _targetType,
-                selectedId: _targetId,
-                onChanged: (id) => setState(() => _targetId = id),
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _reasonController,
-                decoration: InputDecoration(labelText: l10n.fieldReason),
-                validator: (value) => (value == null || value.trim().isEmpty) ? l10n.createFinancialDisputeEnterReason : null,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _messageController,
-                decoration: InputDecoration(labelText: l10n.fieldMessage),
-                maxLines: 5,
-                validator: (value) => (value == null || value.trim().isEmpty) ? l10n.createFinancialDisputeDescribe : null,
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: _isSubmitting ? null : _submit,
-                child: _isSubmitting
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                      )
-                    : Text(l10n.createFinancialDisputeSubmit),
-              ),
-            ],
+    return DiscardChangesGuard(
+      isDirty: () => _isDirty && !_isSubmitting,
+      child: Scaffold(
+        appBar: AppBar(title: Text(l10n.createFinancialDisputeTitle)),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Form(
+            key: _formKey,
+            autovalidateMode: _autovalidate ? AutovalidateMode.always : AutovalidateMode.disabled,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                AppPickerField<FinancialDisputeTargetType>(
+                  value: _targetType,
+                  label: l10n.fieldWhatDisputing,
+                  options: _targetTypeOptions
+                      .map((type) => PickerOption<FinancialDisputeTargetType>(
+                            value: type,
+                            label: type.label(context),
+                            icon: _targetTypeIcon(type),
+                          ))
+                      .toList(),
+                  onChanged: (value) => setState(() {
+                    _targetType = value!;
+                    _targetId = null;
+                  }),
+                ),
+                const SizedBox(height: 12),
+                _TargetPicker(
+                  key: ValueKey(_targetType),
+                  targetType: _targetType,
+                  selectedId: _targetId,
+                  onChanged: (id) => setState(() => _targetId = id),
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _reasonController,
+                  textInputAction: TextInputAction.next,
+                  textCapitalization: TextCapitalization.sentences,
+                  decoration: InputDecoration(labelText: l10n.fieldReason),
+                  validator: (value) => (value == null || value.trim().isEmpty) ? l10n.createFinancialDisputeEnterReason : null,
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _messageController,
+                  maxLines: 5,
+                  textInputAction: TextInputAction.newline,
+                  textCapitalization: TextCapitalization.sentences,
+                  decoration: InputDecoration(labelText: l10n.fieldMessage),
+                  validator: (value) => (value == null || value.trim().isEmpty) ? l10n.createFinancialDisputeDescribe : null,
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: _isSubmitting ? null : _submit,
+                  child: _isSubmitting
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        )
+                      : Text(l10n.createFinancialDisputeSubmit),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -148,31 +184,35 @@ class _TargetPicker extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     switch (targetType) {
       case FinancialDisputeTargetType.utilityBill:
-        return _buildDropdown(
+        return _buildPicker(
           context,
           ref.watch(billsControllerProvider),
-          labelFor: (bill) => '${bill.billNumber} · ${Formatters.currency(bill.totalAmount)}',
+          labelFor: (bill) => bill.billNumber,
+          subtitleFor: (bill) => Formatters.currency(bill.totalAmount),
           idFor: (bill) => bill.id,
         );
       case FinancialDisputeTargetType.rentInvoice:
-        return _buildDropdown(
+        return _buildPicker(
           context,
           ref.watch(rentControllerProvider),
-          labelFor: (invoice) => '${invoice.invoiceNumber} · ${Formatters.currency(invoice.totalAmount)}',
+          labelFor: (invoice) => invoice.invoiceNumber,
+          subtitleFor: (invoice) => Formatters.currency(invoice.totalAmount),
           idFor: (invoice) => invoice.id,
         );
       case FinancialDisputeTargetType.propertyInstallment:
-        return _buildDropdown(
+        return _buildPicker(
           context,
           ref.watch(installmentsControllerProvider),
-          labelFor: (item) => '${AppLocalizations.of(context)!.installmentNumber('${item.installmentNumber}')} · ${Formatters.currency(item.amount)}',
+          labelFor: (item) => AppLocalizations.of(context)!.installmentNumber('${item.installmentNumber}'),
+          subtitleFor: (item) => Formatters.currency(item.amount),
           idFor: (item) => item.id,
         );
       case FinancialDisputeTargetType.payment:
-        return _buildDropdown(
+        return _buildPicker(
           context,
           ref.watch(paymentsControllerProvider),
-          labelFor: (payment) => '${payment.paymentReference} · ${Formatters.currency(payment.amount)}',
+          labelFor: (payment) => payment.paymentReference,
+          subtitleFor: (payment) => Formatters.currency(payment.amount),
           idFor: (payment) => payment.id,
         );
       case FinancialDisputeTargetType.violationFine:
@@ -181,10 +221,11 @@ class _TargetPicker extends ConsumerWidget {
     }
   }
 
-  Widget _buildDropdown<T>(
+  Widget _buildPicker<T>(
     BuildContext context,
     AsyncValue<PagedListState<T>> state, {
     required String Function(T) labelFor,
+    required String Function(T) subtitleFor,
     required String Function(T) idFor,
   }) {
     final l10n = AppLocalizations.of(context)!;
@@ -196,16 +237,20 @@ class _TargetPicker extends ConsumerWidget {
             child: Text(l10n.createFinancialDisputeNothingAvailable),
           );
         }
-        return DropdownButtonFormField<String>(
+        return AppPickerField<String>(
           value: selectedId,
-          decoration: InputDecoration(labelText: l10n.createFinancialDisputeSelectItem),
-          isExpanded: true,
-          items: data.items
-              .map((item) => DropdownMenuItem(
+          label: l10n.createFinancialDisputeSelectItem,
+          // The amount moves to its own line, so a long reference no longer
+          // gets truncated to make room for it.
+          options: data.items
+              .map((item) => PickerOption<String>(
                     value: idFor(item),
-                    child: Text(labelFor(item), overflow: TextOverflow.ellipsis),
+                    label: labelFor(item),
+                    subtitle: subtitleFor(item),
+                    icon: _targetTypeIcon(targetType),
                   ))
               .toList(),
+          validator: (value) => value == null ? l10n.createFinancialDisputeSelectTarget : null,
           onChanged: onChanged,
         );
       },

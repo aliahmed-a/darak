@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/network/api_exception.dart';
 import '../../../../core/utils/formatters.dart';
+import '../../../../core/widgets/app_snackbar.dart';
 import '../../../../core/widgets/status_chip.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/models/contractor_work_permit_status.dart';
@@ -82,7 +83,7 @@ class _GuardContractorDetailScreenState extends ConsumerState<GuardContractorDet
       if (mounted) context.pop();
     } on ApiException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+      showErrorSnack(context, e.message);
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
@@ -118,7 +119,7 @@ class _GuardContractorDetailScreenState extends ConsumerState<GuardContractorDet
       if (mounted) context.pop();
     } on ApiException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+      showErrorSnack(context, e.message);
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
